@@ -4,6 +4,7 @@ import json
 
 
 class FileStorage:
+
     """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
     __objects = {}
@@ -27,7 +28,7 @@ class FileStorage:
     def delete(self, obj=None):
         """ deletes an object from storage dictionary """
         if (obj):
-            key = f"{obj.__class__.__name__}.{obj.id}"
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
             del FileStorage.__objects[key]
             self.save()
 
@@ -51,10 +52,10 @@ class FileStorage:
         from models.review import Review
 
         classes = {
-                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
-                    'State': State, 'City': City, 'Amenity': Amenity,
-                    'Review': Review
-                  }
+            'BaseModel': BaseModel, 'User': User, 'Place': Place,
+            'State': State, 'City': City, 'Amenity': Amenity,
+            'Review': Review
+        }
         try:
             temp = {}
             with open(FileStorage.__file_path, 'r') as f:
