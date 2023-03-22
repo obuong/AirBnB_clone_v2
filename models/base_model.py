@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 """This module defines a base class for all models in our hbnb clone"""
 import uuid
+from os import getenv
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
-
 Base = declarative_base()
+storage_type = getenv('HBNB_TYPE_STORAGE')
+
 
 class BaseModel:
     """A base class for all hbnb models"""
@@ -22,12 +24,18 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
         else:
-            kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            kwargs['created_at'] = datetime.strptime(kwargs['created_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            del kwargs['__class__']
-            self.__dict__.update(kwargs)
+            for k in kwargs:
+                if k in ['created_at', 'updated_at']:
+                    setattr(self, k, datetime.fromisoformat(kwargs[k]))
+                elif k != '__class__':
+                    setattr(self, k, kwargs[k])
+            if storage_type == 'db':
+                if not hasattr(kwargs, 'id'):
+                    setattr(self, 'id', str(uuid.uuid4()))
+                if not hasattr(kwargs, 'created_at'):
+                    setattr(self, 'created_at', datetime.now())
+                if not hasattr(kwargs, 'updated_at'):
+                    setattr(self, 'updated_at', datetime.now())
 
     def __str__(self):
         """Returns a string representation of the instance"""
@@ -48,7 +56,7 @@ class BaseModel:
         dictionary.update({'__class__':
                           (str(type(self)).split('.')[-1]).split('\'')[0]})
         dictionary['created_at'] = self.created_at.isoformat()
-        dictionary['updated_at'] = self.updated_at.isoformat()
+        dictionary['updated_at'] = self.updated_at.isoformat()   
         if (dictionary["_sa_instance_state"]):
             del dictionary["_sa_instance_state"]
         return dictionary
