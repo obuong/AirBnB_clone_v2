@@ -2,6 +2,11 @@
 """
  Test cities access from a state
 """
+from datetime import datetime
+from models.state import State
+
+state_1 = State(name='California', created_at=datetime.now())
+
 from models import storage
 from models.state import State
 from models.city import City
