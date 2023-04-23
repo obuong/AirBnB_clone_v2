@@ -1,12 +1,15 @@
 #!/usr/bin/python3
 """ State Module for HBNB project """
+from datetime import datetime
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from os import getenv
 from models.city import City
 from models import storage
+from models.state import State
 
+state_1 = State(name='California', created_at=datetime.now())
 
 class State(BaseModel, Base):
     """ State class """
